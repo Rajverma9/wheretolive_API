@@ -2,12 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models.city import City, CityMetric
+from app.seed.seed_runner import run_seed
 
 router = APIRouter(prefix="/cities", tags=["Cities"])
 
 @router.get("/")
 def list_cities(session: Session = Depends(get_session)) :
     return session.exec(select(City)).all()
+    cities = session.exec(select(City)).all()
+    if len(cities) == 0 :
+        run_seed()
+    return cities
 
 @router.get("/{city_id}")
 def list(city_id:int, session: Session = Depends(get_session)):
