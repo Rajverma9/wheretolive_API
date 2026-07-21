@@ -8,11 +8,12 @@ router = APIRouter(prefix="/cities", tags=["Cities"])
 
 @router.get("/")
 def list_cities(session: Session = Depends(get_session)) :
-    return session.exec(select(City)).all()
     cities = session.exec(select(City)).all()
-    if len(cities) == 0 :
+
+    if len(cities) == 0:
         run_seed()
-    return cities
+        cities = session.exec(select(City)).all()
+    return cities   
 
 @router.get("/{city_id}")
 def list(city_id:int, session: Session = Depends(get_session)):
